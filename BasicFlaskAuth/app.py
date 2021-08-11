@@ -11,7 +11,6 @@ AUTH0_DOMAIN = 'fsnd-leogovan.eu.auth0.com'
 ALGORITHMS = ['RS256']
 API_AUDIENCE = 'image'
 
-
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
@@ -99,10 +98,11 @@ def verify_decode_jwt(token):
                 'code': 'invalid_header',
                 'description': 'Unable to parse authentication token.'
             }, 400)
-    raise AuthError({
-                'code': 'invalid_header',
-                'description': 'Unable to find the appropriate key.'
-            }, 400)
+    else:
+        raise AuthError({
+                    'code': 'invalid_header',
+                    'description': 'Unable to find the appropriate key.'
+                }, 400)
 
 
 def requires_auth(f):
@@ -111,7 +111,8 @@ def requires_auth(f):
         token = get_token_auth_header()
         try:
             payload = verify_decode_jwt(token)
-        except:
+        except Exception as e:
+            print(e)
             abort(401)
         return f(payload, *args, **kwargs)
 
